@@ -20,7 +20,7 @@ to GitHub Pages automatically.
 **Settings → Pages → Build and deployment → Source** and choose
 **GitHub Actions**.
 
-The site will be live at `https://<your-username>.github.io/FMDetailing/`.
+The site will be live at `https://fmdetailing.github.io/`.
 
 ## Where things live
 
