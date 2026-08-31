@@ -1,7 +1,6 @@
 'use client';
 
-import Link from 'next/link';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { SERVICES } from '@/lib/site';
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || '';
@@ -19,40 +18,40 @@ const TAGS: Record<string, string> = {
   full: 'BEST VALUE',
 };
 
+/** Display order: interior left, full (featured) centre, exterior right. */
+const DISPLAY_ORDER = ['interior', 'full', 'exterior'];
+const ORDERED = DISPLAY_ORDER.map((id) => SERVICES.find((s) => s.id === id)!).filter(Boolean);
+
 /**
- * 3D coverflow of the service packages. Replaces the old
- * ServicesCarousel — same interaction, redesigned card.
+ * 3D coverflow of the service packages.
+ * Navigation: arrows, dots, clicking a side card, and touch swipe.
+ * Index is 1-based; defaults to the centre (featured Full package).
  */
 export default function PackageCoverflow() {
-  const [index, setIndex] = useState(3); // centre on the featured package (1-based)
+  const [index, setIndex] = useState(2); // 1-based; 2 = Full Car Detailing centred
+  const touchStartX = useRef<number | null>(null);
 
-  const cardStyle = (offset: number, featured?: boolean): React.CSSProperties => {
-    const abs = Math.abs(offset);
-    if (abs > 1) return { display: 'none' };
-    const base: React.CSSProperties = {
-      position: 'absolute',
-      width: 400,
-      height: 474,
-      display: 'flex',
-      flexDirection: 'column',
-      borderRadius: 'var(--radius)',
-      overflow: 'hidden',
-      background: 'var(--surface)',
-      border: `1px solid ${featured ? 'var(--accent-line)' : 'var(--border)'}`,
-      transition:
-        'transform .55s cubic-bezier(.22,1,.36,1), opacity .55s ease, filter .55s ease',
-    };
-    if (offset === 0) {
-      return { ...base, transform: 'translateX(0) scale(1)', opacity: 1, zIndex: 3, boxShadow: 'var(--shadow-lg)' };
+  const prev = () => setIndex((i) => Math.max(1, i - 1));
+  const next = () => setIndex((i) => Math.min(ORDERED.length, i + 1));
+
+  const posClass = (offset: number) => {
+    if (offset === 0) return 'cf-card cf-center';
+    if (offset === -1) return 'cf-card cf-side cf-left';
+    if (offset === 1) return 'cf-card cf-side cf-right';
+    return 'cf-card cf-hidden';
+  };
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const diff = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(diff) > 45) {
+      if (diff < 0) next();
+      else prev();
     }
-    const dir = offset < 0 ? -1 : 1;
-    return {
-      ...base,
-      transform: `translateX(${dir * 300}px) scale(.82) rotateY(${-dir * 34}deg)`,
-      opacity: 0.5,
-      filter: 'saturate(.6)',
-      zIndex: 1,
-    };
   };
 
   return (
@@ -63,37 +62,58 @@ export default function PackageCoverflow() {
           <h2 className="section-title">Three ways to reset your car.</h2>
         </div>
         <div className="cf-arrows">
-          <button onClick={() => setIndex((i) => Math.max(1, i - 1))} aria-label="Previous">←</button>
-          <button onClick={() => setIndex((i) => Math.min(SERVICES.length, i + 1))} aria-label="Next">→</button>
+          <button onClick={prev} aria-label="Previous">←</button>
+          <button onClick={next} aria-label="Next">→</button>
         </div>
       </div>
 
-      <div className="cf-stage">
-        {SERVICES.map((s, i) => (
-          <div key={s.id} style={cardStyle(i - (index - 1), s.featured)}>
-            <div className="cf-img">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`${BASE}${IMAGES[s.id]}`} alt="" />
-              <div className="cf-scrim" />
-              <span className="mono cf-tag">{TAGS[s.id]}</span>
-            </div>
-            <div className="cf-body">
-              <h3>{s.name}</h3>
-              <p>{s.blurb}</p>
-              <div className="cf-foot">
-                <span className="cf-price">
-                  ${s.price}
-                  {s.oldPrice && <span className="cf-old">${s.oldPrice}</span>}
-                </span>
-                <span className="mono">{s.duration.replace('~', '~').toUpperCase()}</span>
+      <div className="cf-stage" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+        {ORDERED.map((s, i) => {
+          const offset = i - (index - 1);
+          const isSide = Math.abs(offset) === 1;
+          return (
+            <div
+              key={s.id}
+              className={`${posClass(offset)} ${s.featured ? 'cf-feat' : ''}`}
+              onClick={isSide ? () => setIndex(i + 1) : undefined}
+              role={isSide ? 'button' : undefined}
+              tabIndex={isSide ? 0 : undefined}
+              aria-label={isSide ? `Show ${s.name}` : undefined}
+              onKeyDown={
+                isSide
+                  ? (e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setIndex(i + 1);
+                      }
+                    }
+                  : undefined
+              }
+            >
+              <div className="cf-img">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`${BASE}${IMAGES[s.id]}`} alt="" />
+                <div className="cf-scrim" />
+                <span className="mono cf-tag">{TAGS[s.id]}</span>
+              </div>
+              <div className="cf-body">
+                <h3>{s.name}</h3>
+                <p>{s.blurb}</p>
+                <div className="cf-foot">
+                  <span className="cf-price">
+                    ${s.price}
+                    {s.oldPrice && <span className="cf-old">${s.oldPrice}</span>}
+                  </span>
+                  <span className="mono">{s.duration.toUpperCase()}</span>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="cf-dots">
-        {SERVICES.map((s, i) => (
+        {ORDERED.map((s, i) => (
           <button
             key={s.id}
             aria-label={s.name}
@@ -123,6 +143,8 @@ export default function PackageCoverflow() {
         }
         .cf-arrows button:hover { border-color: var(--accent); color: var(--accent-200); }
         .cf-stage {
+          --cf-shift: 300px;
+          position: relative;
           height: 520px;
           display: flex;
           align-items: center;
@@ -130,8 +152,39 @@ export default function PackageCoverflow() {
           perspective: 1600px;
           overflow: hidden;
           margin-top: 20px;
+          touch-action: pan-y;
         }
-        .cf-img { position: relative; height: 238px; overflow: hidden; border-bottom: 1px solid var(--border); }
+        .cf-card {
+          position: absolute;
+          width: 400px;
+          height: 474px;
+          display: flex;
+          flex-direction: column;
+          border-radius: var(--radius);
+          overflow: hidden;
+          background: var(--surface);
+          border: 1px solid var(--border);
+          transition: transform .55s cubic-bezier(.22,1,.36,1), opacity .55s ease, filter .55s ease;
+        }
+        .cf-feat { border-color: var(--accent-line); }
+        .cf-center {
+          transform: translateX(0) scale(1);
+          opacity: 1;
+          z-index: 3;
+          box-shadow: var(--shadow-lg);
+        }
+        .cf-side {
+          opacity: .5;
+          filter: saturate(.6);
+          z-index: 1;
+          cursor: pointer;
+        }
+        .cf-side:hover { opacity: .7; }
+        .cf-side:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        .cf-left { transform: translateX(calc(-1 * var(--cf-shift))) scale(.82) rotateY(34deg); }
+        .cf-right { transform: translateX(var(--cf-shift)) scale(.82) rotateY(-34deg); }
+        .cf-hidden { display: none; }
+        .cf-img { position: relative; height: 238px; overflow: hidden; border-bottom: 1px solid var(--border); flex-shrink: 0; }
         .cf-img img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.85); }
         .cf-scrim {
           position: absolute; inset: 0;
@@ -165,7 +218,8 @@ export default function PackageCoverflow() {
         }
         .cf-dots button.on { width: 26px; background: var(--accent); }
         @media (max-width: 900px) {
-          .cf-stage { height: 560px; }
+          .cf-stage { --cf-shift: 72vw; height: 560px; }
+          .cf-card { width: min(400px, 80vw); }
           .cf-arrows { display: none; }
         }
       `}</style>
