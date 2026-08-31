@@ -1,55 +1,59 @@
 import Link from 'next/link';
+import { Wordmark } from '@/components/Nav';
 import { SITE } from '@/lib/site';
 
 export default function Footer() {
   return (
-    <footer
-      style={{
-        borderTop: '1px solid var(--border)',
-        padding: '48px 0 40px',
-        marginTop: 40,
-        background: 'var(--bg-elevated)',
-      }}
-    >
-      <div
-        className="container"
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: 24,
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div>
-          <div
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontWeight: 700,
-              fontSize: 18,
-              marginBottom: 6,
-            }}
-          >
-            FM <span className="gradient-text">Detailing</span>
+    <footer className="foot">
+      <div className="container">
+        <div className="foot-top">
+          <div className="foot-brand">
+            <Wordmark size={19} />
+            <span className="mono">MOBILE · GREATER TORONTO AREA</span>
           </div>
-          <div style={{ color: 'var(--text-muted)', fontSize: 14 }}>
-            {SITE.serviceArea}
-          </div>
+          <nav className="foot-links">
+            <Link href="/services/">Services</Link>
+            <Link href="/reviews/">Reviews</Link>
+            <Link href="/contact/">Contact</Link>
+            <Link href="/booking/">Book Now</Link>
+            <a href={SITE.phoneHref}>{SITE.phone}</a>
+          </nav>
         </div>
+        <div className="foot-legal">
+          © {new Date().getFullYear()} {SITE.name} · {SITE.owner}
+        </div>
+      </div>
 
-        <div style={{ display: 'flex', gap: 22, fontSize: 14.5, color: 'var(--text-muted)', flexWrap: 'wrap' }}>
-          <Link href="/services/">Services</Link>
-          <Link href="/reviews/">Reviews</Link>
-          <Link href="/booking/">Book Now</Link>
-          <a href={SITE.phoneHref}>{SITE.phone}</a>
-        </div>
-      </div>
-      <div
-        className="container"
-        style={{ marginTop: 28, color: 'var(--text-faint)', fontSize: 13 }}
-      >
-        © {new Date().getFullYear()} {SITE.name} · {SITE.owner}
-      </div>
+      <style>{`
+        .foot {
+          margin-top: 110px;
+          padding: 52px 0 40px;
+          border-top: 1px solid var(--border);
+          background: var(--bg-elevated);
+        }
+        .foot-top {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 40px;
+          flex-wrap: wrap;
+        }
+        .foot-brand { display: flex; flex-direction: column; gap: 8px; }
+        .foot-brand :global(.mono) { color: var(--accent-700); letter-spacing: .24em; }
+        .foot-links { display: flex; gap: 40px; flex-wrap: wrap; font-size: 14px; }
+        .foot-links :global(a) { color: var(--text-muted); }
+        .foot-links :global(a:hover) { color: var(--text); }
+        .foot-legal {
+          margin-top: 34px;
+          padding-top: 22px;
+          border-top: 1px solid rgba(233,233,237,.07);
+          font-size: 12.5px;
+          color: var(--text-dim);
+        }
+        @media (max-width: 700px) {
+          .foot-links { gap: 20px; }
+        }
+      `}</style>
     </footer>
   );
 }

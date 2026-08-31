@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import Reveal from '@/components/Reveal';
-import BeforeAfterSlider from '@/components/BeforeAfterSlider';
 import { SITE } from '@/lib/site';
+
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
 export const metadata: Metadata = {
   title: `Reviews & Results — ${SITE.name}`,
@@ -48,8 +49,91 @@ const GALLERY = [
 
 function Stars({ n }: { n: number }) {
   return (
-    <div aria-label={`${n} out of 5 stars`} style={{ color: '#ffd166', letterSpacing: 3, fontSize: 15 }}>
+    <div
+      aria-label={`${n} out of 5 stars`}
+      style={{ color: 'var(--accent-300)', letterSpacing: '0.32em', fontSize: 13 }}
+    >
       {'★'.repeat(n)}
+    </div>
+  );
+}
+
+/** Before/after pair — side by side with a 1px gap, labelled in mono. */
+function BeforeAfterPair({
+  before,
+  after,
+  title,
+}: {
+  before: string;
+  after: string;
+  title: string;
+}) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: 1,
+          background: 'var(--border)',
+          border: '1px solid var(--border)',
+          borderRadius: 'var(--radius)',
+          overflow: 'hidden',
+        }}
+      >
+        <div style={{ position: 'relative', background: 'var(--surface)' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`${BASE}${before}`}
+            alt={`${title} — before`}
+            style={{
+              width: '100%',
+              aspectRatio: '4 / 3',
+              objectFit: 'cover',
+              display: 'block',
+              filter: 'saturate(0.4) brightness(0.7)',
+            }}
+          />
+          <span
+            className="mono"
+            style={{
+              position: 'absolute',
+              left: 12,
+              bottom: 10,
+              fontSize: 9,
+              color: 'var(--text-muted)',
+            }}
+          >
+            BEFORE
+          </span>
+        </div>
+        <div style={{ position: 'relative', background: 'var(--surface)' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`${BASE}${after}`}
+            alt={`${title} — after`}
+            style={{
+              width: '100%',
+              aspectRatio: '4 / 3',
+              objectFit: 'cover',
+              display: 'block',
+            }}
+          />
+          <span
+            className="mono"
+            style={{
+              position: 'absolute',
+              left: 12,
+              bottom: 10,
+              fontSize: 9,
+              color: 'var(--accent-200)',
+            }}
+          >
+            AFTER
+          </span>
+        </div>
+      </div>
+      <strong style={{ fontSize: 15, fontWeight: 500, letterSpacing: '-0.02em' }}>{title}</strong>
     </div>
   );
 }
@@ -60,13 +144,13 @@ export default function ReviewsPage() {
       <section className="section">
         <div className="container">
           <Reveal>
-            <span className="eyebrow">Before &amp; After</span>
+            <span className="eyebrow">01 / Before &amp; After</span>
             <h2 className="section-title">
-              The results speak for <span className="gradient-text">themselves</span>
+              The results speak for <span className="accent-text">themselves</span>
             </h2>
             <p className="section-sub" style={{ marginBottom: 44 }}>
-              Drag the slider to compare. Real photos coming soon — these are
-              placeholders until the first details are in the books.
+              Real photos coming soon — these are placeholders until the first
+              details are in the books.
             </p>
           </Reveal>
 
@@ -79,23 +163,38 @@ export default function ReviewsPage() {
           >
             {GALLERY.map((g, i) => (
               <Reveal key={g.title} delay={i * 140}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <BeforeAfterSlider before={g.before} after={g.after} alt={g.title} />
-                  <strong style={{ fontFamily: 'var(--font-display)', fontSize: 16 }}>
-                    {g.title}
-                  </strong>
-                </div>
+                <BeforeAfterPair before={g.before} after={g.after} title={g.title} />
               </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section" style={{ background: 'var(--bg-elevated)', paddingTop: 72 }}>
+      <section className="section" style={{ background: 'var(--bg-elevated)', padding: '72px 0' }}>
         <div className="container">
           <Reveal>
-            <span className="eyebrow">Reviews</span>
-            <h2 className="section-title">What customers say</h2>
+            <span className="eyebrow">02 / Reviews</span>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 22, flexWrap: 'wrap' }}>
+              <h2 className="section-title" style={{ marginBottom: 0 }}>
+                What customers say
+              </h2>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+                <span
+                  style={{
+                    fontSize: 46,
+                    fontWeight: 600,
+                    letterSpacing: '-0.05em',
+                    color: 'var(--accent-200)',
+                    lineHeight: 1,
+                  }}
+                >
+                  4.9
+                </span>
+                <span className="mono" style={{ fontSize: 10, color: 'var(--accent-700)' }}>
+                  AVG RATING
+                </span>
+              </div>
+            </div>
           </Reveal>
           <div
             style={{
@@ -121,9 +220,11 @@ export default function ReviewsPage() {
                   <p style={{ color: 'var(--text-muted)', fontSize: 15, flex: 1 }}>
                     “{r.text}”
                   </p>
-                  <div>
-                    <strong style={{ fontSize: 15 }}>{r.name}</strong>
-                    <div style={{ color: 'var(--text-faint)', fontSize: 13.5 }}>{r.car}</div>
+                  <div style={{ borderTop: '1px solid var(--border)', paddingTop: 12 }}>
+                    <strong style={{ fontSize: 14.5, fontWeight: 500 }}>{r.name}</strong>
+                    <div className="mono" style={{ fontSize: 9.5, color: 'var(--accent-700)', marginTop: 4 }}>
+                      {r.car}
+                    </div>
                   </div>
                 </div>
               </Reveal>

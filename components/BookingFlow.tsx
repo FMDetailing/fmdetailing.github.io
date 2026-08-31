@@ -19,6 +19,92 @@ type Contact = {
   notes: string;
 };
 
+const WEEKDAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+
+function toISO(d: Date) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+/** Horizontal strip of the next 14 days — the mobile stand-in for the month grid. */
+function WeekStrip({
+  selected,
+  onSelect,
+}: {
+  selected: string | null;
+  onSelect: (isoDate: string) => void;
+}) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const days = Array.from({ length: 14 }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    return d;
+  });
+  return (
+    <div className="weekstrip" role="listbox" aria-label="Choose a date">
+      {days.map((d) => {
+        const iso = toISO(d);
+        const active = selected === iso;
+        return (
+          <button
+            type="button"
+            key={iso}
+            role="option"
+            aria-selected={active}
+            onClick={() => onSelect(iso)}
+            className={`weekstrip-day ${active ? 'weekstrip-day-active' : ''}`}
+          >
+            <span className="mono" style={{ fontSize: 9, color: active ? 'var(--accent-200)' : 'var(--accent-700)' }}>
+              {WEEKDAYS[d.getDay()]}
+            </span>
+            <span style={{ fontSize: 16, fontWeight: 500 }}>{d.getDate()}</span>
+          </button>
+        );
+      })}
+      <style jsx>{`
+        .weekstrip {
+          display: flex;
+          gap: 8px;
+          overflow-x: auto;
+          padding-bottom: 6px;
+          -webkit-overflow-scrolling: touch;
+        }
+        .weekstrip-day {
+          flex: 0 0 52px;
+          width: 52px;
+          height: 56px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 3px;
+          border-radius: var(--radius-sm);
+          background: rgba(233, 233, 237, 0.03);
+          border: 1px solid rgba(233, 233, 237, 0.1);
+          color: var(--text);
+          cursor: pointer;
+          transition: background 0.2s ease, border-color 0.2s ease;
+        }
+        .weekstrip-day:hover { border-color: var(--accent); }
+        .weekstrip-day-active {
+          background: var(--accent-soft);
+          border-color: var(--accent-line);
+        }
+      `}</style>
+    </div>
+  );
+}
+
+function formatDateShort(iso: string) {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d)
+    .toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric' })
+    .toUpperCase();
+}
+
 function formatDate(iso: string) {
   const [y, m, d] = iso.split('-').map(Number);
   return new Date(y, m - 1, d).toLocaleDateString('en-CA', {
@@ -86,15 +172,15 @@ export default function BookingFlow() {
             <div className="card" style={{ padding: 'clamp(32px, 5vw, 52px)', textAlign: 'center' }}>
               <div
                 style={{
-                  width: 64, height: 64,
-                  borderRadius: '50%',
+                  width: 28, height: 28,
+                  borderRadius: 'var(--radius-sm)',
                   margin: '0 auto 20px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: 28,
-                  background: 'rgba(74, 222, 128, 0.12)',
-                  border: '1px solid rgba(74, 222, 128, 0.4)',
+                  fontSize: 15,
+                  background: 'var(--accent)',
+                  color: '#161826',
                 }}
               >
                 ✓
@@ -120,7 +206,7 @@ export default function BookingFlow() {
               <p style={{ color: 'var(--text-faint)', fontSize: 13.5, marginTop: 22 }}>
                 Note: online booking is in preview — to lock in this time right
                 away, call or text{' '}
-                <a href={SITE.phoneHref} style={{ color: 'var(--accent)' }}>{SITE.phone}</a>.
+                <a href={SITE.phoneHref} style={{ color: 'var(--accent-300)' }}>{SITE.phone}</a>.
               </p>
             </div>
           </Reveal>
@@ -136,12 +222,12 @@ export default function BookingFlow() {
         <Reveal>
           <span className="eyebrow">Booking</span>
           <h2 className="section-title">
-            Book your <span className="gradient-text">detail</span>
+            Book your <span className="accent-text">detail</span>
           </h2>
           <p className="section-sub" style={{ marginBottom: 40 }}>
             Three quick steps — we&apos;ll confirm your appointment by text.
             Prefer to talk? Call or text{' '}
-            <a href={SITE.phoneHref} style={{ color: 'var(--accent)', fontWeight: 600 }}>
+            <a href={SITE.phoneHref} style={{ color: 'var(--accent-300)', fontWeight: 600 }}>
               {SITE.phone}
             </a>.
           </p>
@@ -172,17 +258,17 @@ export default function BookingFlow() {
                         padding: '18px 18px',
                         borderRadius: 'var(--radius-sm)',
                         cursor: 'pointer',
-                        background: active ? 'var(--accent-soft)' : 'rgba(255,255,255,0.03)',
+                        background: active ? 'var(--accent-soft)' : 'rgba(233,233,237,0.03)',
                         border: active
-                          ? '1.5px solid var(--accent)'
-                          : '1px solid var(--border-strong)',
+                          ? '1px solid var(--accent)'
+                          : '1px solid rgba(233,233,237,0.12)',
                         color: 'var(--text)',
                         transition: 'border-color 0.2s ease, background 0.2s ease',
                       }}
                     >
                       <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 4 }}>{s.name}</div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                        <span className="gradient-text" style={{ fontWeight: 700, fontSize: 20, fontFamily: 'var(--font-display)' }}>
+                        <span style={{ color: 'var(--accent-200)', fontWeight: 600, fontSize: 24, letterSpacing: '-0.04em' }}>
                           ${s.price}
                         </span>
                         <span style={{ color: 'var(--text-faint)', fontSize: 13 }}>{s.duration}</span>
@@ -206,9 +292,16 @@ export default function BookingFlow() {
                   marginTop: 18,
                 }}
               >
-                <Calendar selected={date} onSelect={(d) => { setDate(d); setSlot(null); }} />
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.04em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: 12 }}>
+                  <div className="cal-desktop">
+                    <Calendar selected={date} onSelect={(d) => { setDate(d); setSlot(null); }} />
+                  </div>
+                  <div className="cal-mobile">
+                    <WeekStrip selected={date} onSelect={(d) => { setDate(d); setSlot(null); }} />
+                  </div>
+                </div>
+                <div>
+                  <div className="mono" style={{ fontSize: 10, marginBottom: 12 }}>
                     {date ? `Times for ${formatDate(date)}` : 'Select a date first'}
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: 10 }}>
@@ -221,16 +314,24 @@ export default function BookingFlow() {
                           disabled={!date}
                           onClick={() => setSlot(t)}
                           style={{
-                            padding: '12px 8px',
+                            height: 36,
+                            padding: '0 8px',
                             borderRadius: 'var(--radius-sm)',
                             cursor: date ? 'pointer' : 'not-allowed',
-                            opacity: date ? 1 : 0.4,
-                            fontSize: 14,
-                            fontWeight: 600,
-                            background: active ? 'var(--accent-gradient)' : 'rgba(255,255,255,0.03)',
-                            color: active ? '#051018' : 'var(--text)',
-                            border: active ? '1px solid transparent' : '1px solid var(--border-strong)',
-                            transition: 'background 0.2s ease, border-color 0.2s ease',
+                            fontSize: 13.5,
+                            fontWeight: 500,
+                            background: date
+                              ? active ? 'var(--accent)' : 'rgba(233,233,237,0.03)'
+                              : 'transparent',
+                            color: date
+                              ? active ? '#161826' : 'var(--text)'
+                              : '#3f424d',
+                            border: active
+                              ? '1px solid var(--accent)'
+                              : date
+                                ? '1px solid rgba(233,233,237,0.1)'
+                                : '1px solid transparent',
+                            transition: 'background 0.2s ease, border-color 0.2s ease, color 0.2s ease',
                           }}
                         >
                           {t}
@@ -249,7 +350,7 @@ export default function BookingFlow() {
 
           {/* STEP 3 — contact */}
           <Reveal delay={120}>
-            <div className="card" style={{ padding: 'clamp(22px, 4vw, 34px)' }}>
+            <div className="card" id="bk-details" style={{ padding: 'clamp(22px, 4vw, 34px)' }}>
               <StepLabel n={3} title="Your details" done={!!(contact.name && contact.phone)} />
               <div
                 style={{
@@ -322,6 +423,10 @@ export default function BookingFlow() {
                 gap: 18,
                 alignItems: 'center',
                 justifyContent: 'space-between',
+                background: 'var(--bg)',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius)',
+                padding: '18px 22px',
               }}
             >
               <div style={{ color: 'var(--text-muted)', fontSize: 14.5 }}>
@@ -329,7 +434,7 @@ export default function BookingFlow() {
                   <>
                     <strong style={{ color: 'var(--text)' }}>{service.name}</strong>{' '}
                     · {formatDate(date)} · {slot} ·{' '}
-                    <span className="gradient-text" style={{ fontWeight: 700 }}>${service.price}</span>
+                    <span style={{ color: 'var(--accent-200)', fontWeight: 600, letterSpacing: '-0.04em' }}>${service.price}</span>
                   </>
                 ) : (
                   'Complete the steps above to request your appointment.'
@@ -341,6 +446,46 @@ export default function BookingFlow() {
             </div>
           </Reveal>
         </form>
+
+        {/* Mobile summary bar — pinned above the bottom edge under 700px */}
+        {service && date && slot && (
+          <div className="bk-mobilebar">
+            <div style={{ minWidth: 0 }}>
+              <div className="mono" style={{ fontSize: 9, color: 'var(--accent-700)', marginBottom: 2, whiteSpace: 'nowrap' }}>
+                {formatDateShort(date)} · {slot}
+              </div>
+              <div style={{ fontSize: 18, fontWeight: 600, letterSpacing: '-0.04em', color: 'var(--accent-200)' }}>
+                ${service.price}
+              </div>
+            </div>
+            <a href="#bk-details" className="btn btn-primary" style={{ flex: 1, justifyContent: 'center' }}>
+              Continue to details
+            </a>
+          </div>
+        )}
+
+        <style jsx>{`
+          .cal-mobile { display: none; }
+          .bk-mobilebar { display: none; }
+          @media (max-width: 700px) {
+            .cal-desktop { display: none; }
+            .cal-mobile { display: block; }
+            .bk-mobilebar {
+              position: fixed;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              z-index: 50;
+              display: flex;
+              align-items: center;
+              gap: 16px;
+              padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+              background: rgba(18, 19, 31, 0.92);
+              backdrop-filter: blur(16px);
+              border-top: 1px solid var(--border-strong);
+            }
+          }
+        `}</style>
       </div>
     </section>
   );
@@ -351,16 +496,16 @@ function StepLabel({ n, title, done }: { n: number; title: string; done: boolean
     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
       <span
         style={{
-          width: 30, height: 30,
-          borderRadius: '50%',
+          width: 28, height: 28,
+          borderRadius: 'var(--radius-sm)',
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: 14,
-          fontWeight: 700,
-          background: done ? 'var(--accent-gradient)' : 'rgba(255,255,255,0.06)',
-          color: done ? '#051018' : 'var(--text-muted)',
-          border: done ? 'none' : '1px solid var(--border-strong)',
+          fontSize: 13,
+          fontWeight: 600,
+          background: done ? 'var(--accent)' : 'rgba(233,233,237,0.05)',
+          color: done ? '#161826' : 'var(--text-muted)',
+          border: done ? 'none' : '1px solid rgba(233,233,237,0.14)',
           transition: 'background 0.3s ease',
         }}
       >

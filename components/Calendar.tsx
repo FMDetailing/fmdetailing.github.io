@@ -64,7 +64,7 @@ export default function Calendar({
         >
           ←
         </button>
-        <strong style={{ fontFamily: 'var(--font-display)', fontSize: 17 }}>
+        <strong style={{ fontSize: 15, fontWeight: 500, letterSpacing: '-0.02em' }}>
           {MONTHS[month]} {year}
         </strong>
         <button
@@ -103,19 +103,19 @@ export default function Calendar({
 
       <style jsx>{`
         .cal-nav {
-          background: rgba(255, 255, 255, 0.05);
+          background: transparent;
           border: 1px solid var(--border-strong);
           color: var(--text);
           width: 36px;
           height: 36px;
-          border-radius: 10px;
+          border-radius: var(--radius-sm);
           cursor: pointer;
           font-size: 15px;
-          transition: background 0.2s ease, border-color 0.2s ease;
+          transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
         }
         .cal-nav:hover:not(:disabled) {
-          background: var(--accent-soft);
           border-color: var(--accent);
+          color: var(--accent-200);
         }
         .cal-nav:disabled { opacity: 0.3; cursor: not-allowed; }
         .cal-grid {
@@ -125,38 +125,39 @@ export default function Calendar({
         }
         .cal-dow {
           text-align: center;
-          font-size: 11.5px;
-          font-weight: 700;
-          letter-spacing: 0.08em;
-          color: var(--text-faint);
+          font-family: var(--font-mono);
+          font-size: 9px;
+          font-weight: 500;
+          letter-spacing: 0.12em;
+          color: var(--accent-700);
           text-transform: uppercase;
           padding: 6px 0;
         }
         .cal-day {
-          aspect-ratio: 1;
-          border-radius: 10px;
-          border: 1px solid transparent;
-          background: rgba(255, 255, 255, 0.03);
+          height: 36px;
+          border-radius: var(--radius-sm);
+          border: 1px solid rgba(233, 233, 237, 0.1);
+          background: rgba(233, 233, 237, 0.03);
           color: var(--text);
-          font-size: 14px;
+          font-size: 13.5px;
           cursor: pointer;
-          transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+          transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
         }
         .cal-day:hover:not(:disabled) {
-          background: var(--accent-soft);
           border-color: var(--accent);
-          transform: scale(1.05);
         }
         .cal-day:disabled {
-          opacity: 0.25;
+          background: transparent;
+          border-color: transparent;
+          color: #3f424d;
           cursor: not-allowed;
         }
         .cal-day-today { border-color: var(--border-strong); }
         .cal-day-selected {
-          background: var(--accent-gradient) !important;
-          color: #051018;
-          font-weight: 700;
-          border-color: transparent;
+          background: var(--accent) !important;
+          color: #161826;
+          font-weight: 600;
+          border-color: var(--accent);
         }
       `}</style>
     </div>
