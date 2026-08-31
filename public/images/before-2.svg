@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#14181f"/><stop offset="1" stop-color="#0a0c10"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4a4640"/><stop offset="1" stop-color="#2e2b27"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <rect y="430" width="800" height="70" fill="#07080b"/>
+  <line x1="0" y1="430" x2="800" y2="430" stroke="#1e232c" stroke-width="2"/>
+  <!-- car body -->
+  <g>
+    <path d="M150 375 C 150 340 165 320 205 312 L 250 260 C 262 240 285 228 320 226 L 460 226 C 500 228 525 242 545 268 L 580 310 C 630 318 650 338 650 372 L 650 392 C 650 400 644 405 636 405 L 164 405 C 156 405 150 400 150 392 Z" fill="url(#body)"/>
+    <path d="M262 262 L 300 240 L 380 238 L 382 262 Z" fill="#1c2732" opacity="0.9"/>
+    <path d="M398 262 L 396 238 L 470 240 L 520 264 Z" fill="#1c2732" opacity="0.9"/>
+    <circle cx="255" cy="400" r="46" fill="#0d0f13"/>
+    <circle cx="255" cy="400" r="24" fill="#2a303b"/>
+    <circle cx="545" cy="400" r="46" fill="#0d0f13"/>
+    <circle cx="545" cy="400" r="24" fill="#2a303b"/>
+    
+    <g opacity="0.55" fill="#8a7f6d">
+      <circle cx="235" cy="285" r="4"/><circle cx="300" cy="310" r="3"/><circle cx="420" cy="295" r="5"/>
+      <circle cx="500" cy="320" r="3"/><circle cx="560" cy="290" r="4"/><circle cx="360" cy="330" r="3"/>
+      <circle cx="270" cy="335" r="2.5"/><circle cx="470" cy="270" r="3"/><circle cx="530" cy="345" r="2.5"/>
+    </g>
+    <path d="M200 350 Q 400 342 620 350" stroke="#6b6154" stroke-width="6" fill="none" opacity="0.4"/>
+  </g>
+  <g font-family="Arial, sans-serif" text-anchor="middle">
+    <rect x="40" y="40" width="140" height="40" rx="20" fill="#3a3733"/>
+    <text x="110" y="67" font-size="18" font-weight="bold" fill="#e8edf4" letter-spacing="3">BEFORE</text>
+    <text x="400" y="478" font-size="13" fill="#5c6674">Placeholder — replace with a real photo</text>
+  </g>
+</svg>
