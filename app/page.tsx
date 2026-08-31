@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import Reveal from '@/components/Reveal';
-import ServiceCard from '@/components/ServiceCard';
-import { SERVICES, SITE } from '@/lib/site';
+import ServicesCarousel from '@/components/ServicesCarousel';
+import { SITE } from '@/lib/site';
+
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
 const STEPS = [
   {
@@ -45,29 +47,41 @@ export default function Home() {
           position: 'relative',
           overflow: 'hidden',
           padding: '110px 0 120px',
-          minHeight: 'calc(92vh - var(--nav-height))',
+          minHeight: 'calc(94vh - var(--nav-height))',
           display: 'flex',
           alignItems: 'center',
         }}
       >
-        <div
-          className="glow-orb"
-          style={{
-            width: 520, height: 520,
-            top: -140, right: -120,
-            background: 'rgba(69, 196, 255, 0.14)',
-            animation: 'drift 14s ease-in-out infinite',
-          }}
-        />
-        <div
-          className="glow-orb"
-          style={{
-            width: 420, height: 420,
-            bottom: -180, left: -140,
-            background: 'rgba(124, 140, 248, 0.12)',
-            animation: 'drift 18s ease-in-out infinite reverse',
-          }}
-        />
+        {/* Photo backdrop */}
+        <div aria-hidden style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`${BASE}/images/hero-audi.jpg`}
+            alt=""
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              objectPosition: 'center 58%',
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background:
+                'linear-gradient(90deg, rgba(7,8,11,0.92) 0%, rgba(7,8,11,0.66) 48%, rgba(7,8,11,0.3) 100%)',
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background:
+                'linear-gradient(180deg, rgba(7,8,11,0.5) 0%, rgba(7,8,11,0.1) 45%, var(--bg) 100%)',
+            }}
+          />
+        </div>
 
         <div className="container" style={{ position: 'relative', zIndex: 1 }}>
           <Reveal>
@@ -76,14 +90,14 @@ export default function Home() {
           <Reveal delay={100}>
             <h1
               style={{
-                fontSize: 'clamp(42px, 7vw, 76px)',
+                fontSize: 'clamp(44px, 7.5vw, 82px)',
+                letterSpacing: '0.05em',
                 margin: '20px 0 22px',
-                maxWidth: 760,
+                maxWidth: 820,
+                lineHeight: 1.04,
               }}
             >
-              Showroom shine,
-              <br />
-              <span className="gradient-text shine-wrap">delivered.</span>
+              FM DETAILING
             </h1>
           </Reveal>
           <Reveal delay={200}>
@@ -91,13 +105,13 @@ export default function Home() {
               style={{
                 color: 'var(--text-muted)',
                 fontSize: 'clamp(16px, 2vw, 19px)',
-                maxWidth: 540,
+                maxWidth: 560,
                 marginBottom: 36,
               }}
             >
-              Professional interior &amp; exterior car detailing across the
-              Greater Toronto Area. Meticulous work, honest prices, and a
-              finish you can see your reflection in.
+              Premium mobile detailing across the Greater Toronto Area. We
+              bring the showroom finish to your driveway — meticulous interior
+              and exterior work at flat, honest prices.
             </p>
           </Reveal>
           <Reveal delay={300}>
@@ -170,36 +184,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ============ SERVICES PREVIEW ============ */}
-      <section className="section" style={{ background: 'var(--bg-elevated)' }}>
-        <div className="container">
-          <Reveal>
-            <span className="eyebrow">Services</span>
-            <h2 className="section-title">Pick your package</h2>
-            <p className="section-sub" style={{ marginBottom: 44 }}>
-              Flat, honest pricing — no surprises when we&apos;re done.
-            </p>
-          </Reveal>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-              gap: 22,
-            }}
-          >
-            {SERVICES.map((s, i) => (
-              <Reveal key={s.id} delay={i * 130}>
-                <ServiceCard service={s} compact />
-              </Reveal>
-            ))}
-          </div>
-          <Reveal delay={200}>
-            <div style={{ textAlign: 'center', marginTop: 40 }}>
-              <Link href="/services/" className="btn btn-ghost">
-                See full service details →
-              </Link>
-            </div>
-          </Reveal>
+      {/* ============ SERVICES ============ */}
+      <section id="services" style={{ position: 'relative' }}>
+        <ServicesCarousel sectionLabel="Our Services" />
+        <div style={{ textAlign: 'center', padding: '0 24px 64px', background: 'var(--bg)' }}>
+          <Link href="/services/" className="btn btn-ghost">
+            See full service details →
+          </Link>
         </div>
       </section>
 

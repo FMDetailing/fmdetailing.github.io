@@ -16,6 +16,8 @@ export type Service = {
   id: string;
   name: string;
   price: number;
+  /** Original price — when set, shown struck through next to `price` (sale). */
+  oldPrice?: number;
   duration: string;
   blurb: string;
   includes: string[];
@@ -59,6 +61,7 @@ export const SERVICES: Service[] = [
     id: 'full',
     name: 'Full Car Detailing',
     price: 150,
+    oldPrice: 200,
     duration: '~4 hours',
     blurb:
       'The complete package — interior and exterior, done in one visit. Our best value.',

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Reveal from '@/components/Reveal';
-import ServiceCard from '@/components/ServiceCard';
-import { SERVICES, SITE } from '@/lib/site';
+import ServicesCarousel from '@/components/ServicesCarousel';
+import { SITE } from '@/lib/site';
 
 export const metadata: Metadata = {
   title: `Services & Pricing — ${SITE.name}`,
@@ -28,21 +28,11 @@ export default function ServicesPage() {
           </p>
         </Reveal>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: 24,
-            alignItems: 'stretch',
-          }}
-        >
-          {SERVICES.map((s, i) => (
-            <Reveal key={s.id} delay={i * 130}>
-              <ServiceCard service={s} />
-            </Reveal>
-          ))}
-        </div>
+      </div>
 
+      <ServicesCarousel sectionLabel="Packages & Pricing" />
+
+      <div className="container" style={{ marginTop: 8 }}>
         <Reveal delay={150}>
           <div
             className="card"
