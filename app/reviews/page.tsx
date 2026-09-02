@@ -36,14 +36,19 @@ const REVIEWS = [
 
 const GALLERY = [
   {
-    title: 'Exterior gloss restored',
-    before: '/images/before-1.svg',
-    after: '/images/after-1.svg',
+    title: 'Lexus IS — driver’s side deep clean',
+    before: '/images/reviews/lexus-before.jpg',
+    after: '/images/reviews/lexus-after.jpg',
   },
   {
-    title: 'Full detail transformation',
-    before: '/images/before-2.svg',
-    after: '/images/after-2.svg',
+    title: 'Lexus IS — centre console & cup holders',
+    before: '/images/reviews/lexus-cup-before.jpg',
+    after: '/images/reviews/lexus-cup-after.jpg',
+  },
+  {
+    title: 'Toyota Camry — dash, mats & carpets revived',
+    before: '/images/reviews/camry-before.jpg',
+    after: '/images/reviews/camry-after.jpg',
   },
 ];
 
@@ -54,6 +59,49 @@ function Stars({ n }: { n: number }) {
       style={{ color: 'var(--accent-300)', letterSpacing: '0.32em', fontSize: 13 }}
     >
       {'★'.repeat(n)}
+    </div>
+  );
+}
+
+/** Standalone finished-result shot — same card treatment as the pairs, one full-width image. */
+function FinishedShot({ src, title }: { src: string; title: string }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div
+        style={{
+          position: 'relative',
+          background: 'var(--surface)',
+          border: '1px solid var(--border)',
+          borderRadius: 'var(--radius)',
+          overflow: 'hidden',
+        }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={`${BASE}${src}`}
+          alt={`${title} — finished result`}
+          style={{
+            width: '100%',
+            aspectRatio: '3 / 2',
+            objectFit: 'cover',
+            objectPosition: 'center 42%',
+            display: 'block',
+          }}
+        />
+        <span
+          className="mono"
+          style={{
+            position: 'absolute',
+            left: 12,
+            bottom: 10,
+            fontSize: 9,
+            color: 'var(--accent-200)',
+          }}
+        >
+          FINISHED RESULT
+        </span>
+      </div>
+      <strong style={{ fontSize: 15, fontWeight: 500, letterSpacing: '-0.02em' }}>{title}</strong>
     </div>
   );
 }
@@ -88,10 +136,9 @@ function BeforeAfterPair({
             alt={`${title} — before`}
             style={{
               width: '100%',
-              aspectRatio: '4 / 3',
+              aspectRatio: '3 / 4',
               objectFit: 'cover',
               display: 'block',
-              filter: 'saturate(0.4) brightness(0.7)',
             }}
           />
           <span
@@ -114,7 +161,7 @@ function BeforeAfterPair({
             alt={`${title} — after`}
             style={{
               width: '100%',
-              aspectRatio: '4 / 3',
+              aspectRatio: '3 / 4',
               objectFit: 'cover',
               display: 'block',
             }}
@@ -144,13 +191,13 @@ export default function ReviewsPage() {
       <section className="section">
         <div className="container">
           <Reveal>
-            <span className="eyebrow">01 / Before &amp; After</span>
+            <span className="eyebrow">01 / Recent Details</span>
             <h2 className="section-title">
               The results speak for <span className="accent-text">themselves</span>
             </h2>
             <p className="section-sub" style={{ marginBottom: 44 }}>
-              Real photos coming soon — these are placeholders until the first
-              details are in the books.
+              Real before &amp; after photos from recent clients — interior deep
+              cleans on a Lexus IS and a Toyota Camry.
             </p>
           </Reveal>
 
@@ -166,6 +213,12 @@ export default function ReviewsPage() {
                 <BeforeAfterPair before={g.before} after={g.after} title={g.title} />
               </Reveal>
             ))}
+            <Reveal delay={GALLERY.length * 140}>
+              <FinishedShot
+                src="/images/reviews/lexus-side-after.jpg"
+                title="Lexus IS — passenger side, ready for pickup"
+              />
+            </Reveal>
           </div>
         </div>
       </section>

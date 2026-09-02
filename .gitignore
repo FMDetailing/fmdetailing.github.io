@@ -16,3 +16,6 @@ npm-debug.log*
 
 # scratch
 /_to_delete/
+
+# original phone photos (converted web versions live in public/images)
+/photo-originals/
